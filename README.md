@@ -9,7 +9,7 @@ sudo docker build -t ros-nav .
 **Docker**
 
 ```bash
-sudo docker run --net host -it ros-nav
+sudo docker run --net host --privileged -it ros-nav
 
 # All the other terminal
 sudo docker ps
