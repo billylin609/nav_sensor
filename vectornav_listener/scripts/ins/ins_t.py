@@ -7,95 +7,49 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
+import ins
+
 class ins_t(object):
 
     __slots__ = ["time", "week", "utcTime", "insStatus", "yaw", "pitch", "roll", "latitude", "longitude", "altitude", "nedVelX", "nedVelY", "nedVelZ", "attUncertainty", "posUncertainty", "velUncertainty"]
 
-    __typenames__ = ["double", "int32_t", "int64_t", "int32_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
+    __typenames__ = ["double", "ins.uint16_t", "ins.uint64_t", "ins.uint16_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None, None, None, [3], None, None]
 
     def __init__(self):
         self.time = 0.0
-        """ LCM Type: double
-            # GPS time of week in seconds 
-        """
-        self.week = 0
-        """ LCM Type: int16_t 
-            # GPS week (week) 
-        """
-        self.utcTime = 0
-        """ LCM Type: int64_t 
-            # The current UTC time. The year is given as a signed byte year offset from the year 2000. E.g. 2013 as 13.
-                # Fields:       year    month    day    hour    min    sec    ms
-                # Byte offset:  0       1        2      3       4      5      6|7 
-        """
-        self.insStatus = 0
-        """ LCM Type: int16_t 
-            # INS Status
-            # Name		Bit Offset	Format	Description
-            # Mode		0			2 bits	Indicates the current mode of the INS filter.
-            #								0 = Not tracking. Insufficient dynamic motion to estimate attitude.
-            #								1 = Sufficient dynamic motion, but solution not within performance specs.
-            #								2 = INS is tracking and operating within specifications.
-            # GpsFix	2			1 bit	Indicates whether the GPS has a proper fix
-            # Error 	3			4 bits	Sensor measurement error code
-            #								0 = No errors detected.
-            # 								Name			Bit Offset	Format	Description
-            #								Time Error		0			1 bit	High if INS filter loop exceeds 5 ms.
-            #								IMU Error		1			1 bit	High if IMU communication error is detected.
-            #								Mag/Pres Error	2			1 bit	High if Magnetometer or Pressure sensor error is detected.
-            #								GPS Error		3			1 bit	High if GPS communication error is detected.
-            #Reserved	7			9 bits	Reserved for future use.
-        """
+        """ LCM Type: double """
+        self.week = ins.uint16_t()
+        """ LCM Type: ins.uint16_t """
+        self.utcTime = ins.uint64_t()
+        """ LCM Type: ins.uint64_t """
+        self.insStatus = ins.uint16_t()
+        """ LCM Type: ins.uint16_t """
         self.yaw = 0.0
-        """ LCM Type: float 
-            # Yaw angle relative to true north. (degree)
-        """
+        """ LCM Type: float """
         self.pitch = 0.0
-        """ LCM Type: float 
-            # Yaw angle relative to true north (degree)
-        """
+        """ LCM Type: float """
         self.roll = 0.0
-        """ LCM Type: float 
-            # Pitch angle relative to horizon (degree)
-        """
+        """ LCM Type: float """
         self.latitude = 0.0
-        """ LCM Type: double 
-            # INS solution position in geodetic latitude (degree)
-        """
+        """ LCM Type: double """
         self.longitude = 0.0
-        """ LCM Type: double 
-            # INS solution position in geodetic longitude (degree)
-        """
+        """ LCM Type: double """
         self.altitude = 0.0
-        """ LCM Type: double 
-            # Height above ellipsoid. (WGS84) (meter)
-        """
+        """ LCM Type: double """
         self.nedVelX = 0.0
-        """ LCM Type: float 
-            # INS solution velocity in NED frame. (North) (m/s)
-        """
+        """ LCM Type: float """
         self.nedVelY = 0.0
-        """ LCM Type: float 
-            # INS solution velocity in NED frame. (East) (m/s)
-        """
+        """ LCM Type: float """
         self.nedVelZ = 0.0
-        """ LCM Type: float 
-            # INS solution velocity in NED frame. (Down) (m/s)
-        """
+        """ LCM Type: float """
         self.attUncertainty = [ 0.0 for dim0 in range(3) ]
-        """ LCM Type: float[3] 
-            # Uncertainty in attitude estimate (yaw, pitch and roll in degrees)
-        """
+        """ LCM Type: float[3] """
         self.posUncertainty = 0.0
-        """ LCM Type: float 
-            # Uncertainty in position estimate (m)
-        """
+        """ LCM Type: float """
         self.velUncertainty = 0.0
-        """ LCM Type: float 
-            # Uncertainty in velocity estimate (m/s)
-        """
+        """ LCM Type: float """
 
     def encode(self):
         buf = BytesIO()
@@ -104,7 +58,14 @@ class ins_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">diqifffdddfff", self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
+        buf.write(struct.pack(">d", self.time))
+        assert self.week._get_packed_fingerprint() == ins.uint16_t._get_packed_fingerprint()
+        self.week._encode_one(buf)
+        assert self.utcTime._get_packed_fingerprint() == ins.uint64_t._get_packed_fingerprint()
+        self.utcTime._encode_one(buf)
+        assert self.insStatus._get_packed_fingerprint() == ins.uint16_t._get_packed_fingerprint()
+        self.insStatus._encode_one(buf)
+        buf.write(struct.pack(">fffdddfff", self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
         buf.write(struct.pack('>3f', *self.attUncertainty[:3]))
         buf.write(struct.pack(">ff", self.posUncertainty, self.velUncertainty))
 
@@ -121,7 +82,11 @@ class ins_t(object):
     @staticmethod
     def _decode_one(buf):
         self = ins_t()
-        self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ = struct.unpack(">dhqhfffdddfff", buf.read(68))
+        self.time = struct.unpack(">d", buf.read(8))[0]
+        self.week = ins.uint16_t._decode_one(buf)
+        self.utcTime = ins.uint64_t._decode_one(buf)
+        self.insStatus = ins.uint16_t._decode_one(buf)
+        self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ = struct.unpack(">fffdddfff", buf.read(48))
         self.attUncertainty = struct.unpack('>3f', buf.read(12))
         self.posUncertainty, self.velUncertainty = struct.unpack(">ff", buf.read(8))
         return self
@@ -129,7 +94,8 @@ class ins_t(object):
     @staticmethod
     def _get_hash_recursive(parents):
         if ins_t in parents: return 0
-        tmphash = (0xe95833bb5810d40a) & 0xffffffffffffffff
+        newparents = parents + [ins_t]
+        tmphash = (0xa3bdca9a930a85e9+ ins.uint16_t._get_hash_recursive(newparents)+ ins.uint64_t._get_hash_recursive(newparents)+ ins.uint16_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
