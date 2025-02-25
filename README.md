@@ -19,7 +19,7 @@ sudo docker exec -it <container-id> /bin/bash
 **terminal 2**
 
 ```bash
-source /ros_entrypoint.bash
+source /ros_entrypoint.sh
 
 source devel/setup.bash
 
