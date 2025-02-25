@@ -16,29 +16,12 @@ sudo docker ps
 sudo docker exec -it <container-id> /bin/bash 
 ```
 
-**terminal 1**
-
-```bash
-source /entrypoint.bash
-
-roscore
-# Note: press ctrl-c imediately after launch roscore to interupt, otherwise roscore will not be launched
-```
-
 **terminal 2**
 
 ```bash
-export LCM_DEFAULT_URL=udpm://239.255.76.67:7667?ttl=1
+source /ros_entrypoint.bash
 
-source /entrypoint.bash
-
-rosrun vectornav_listener ins_listener.py
-```
-
-**terminal 3**
-
-```bash
-source /entrypoint.bash
+source devel/setup.bash
 
 roslaunch src/vectornav/launch/vectornav.launch
 ```
