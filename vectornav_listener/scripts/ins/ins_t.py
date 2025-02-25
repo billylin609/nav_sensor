@@ -7,25 +7,23 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import ins
-
 class ins_t(object):
 
     __slots__ = ["time", "week", "utcTime", "insStatus", "yaw", "pitch", "roll", "latitude", "longitude", "altitude", "nedVelX", "nedVelY", "nedVelZ", "attUncertainty", "posUncertainty", "velUncertainty"]
 
-    __typenames__ = ["double", "ins.uint16_t", "ins.uint64_t", "ins.uint16_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
+    __typenames__ = ["double", "int32_t", "int64_t", "int32_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None, None, None, [3], None, None]
 
     def __init__(self):
         self.time = 0.0
         """ LCM Type: double """
-        self.week = ins.uint16_t()
-        """ LCM Type: ins.uint16_t """
-        self.utcTime = ins.uint64_t()
-        """ LCM Type: ins.uint64_t """
-        self.insStatus = ins.uint16_t()
-        """ LCM Type: ins.uint16_t """
+        self.week = 0
+        """ LCM Type: int32_t """
+        self.utcTime = 0
+        """ LCM Type: int64_t """
+        self.insStatus = 0
+        """ LCM Type: int32_t """
         self.yaw = 0.0
         """ LCM Type: float """
         self.pitch = 0.0
@@ -58,14 +56,7 @@ class ins_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">d", self.time))
-        assert self.week._get_packed_fingerprint() == ins.uint16_t._get_packed_fingerprint()
-        self.week._encode_one(buf)
-        assert self.utcTime._get_packed_fingerprint() == ins.uint64_t._get_packed_fingerprint()
-        self.utcTime._encode_one(buf)
-        assert self.insStatus._get_packed_fingerprint() == ins.uint16_t._get_packed_fingerprint()
-        self.insStatus._encode_one(buf)
-        buf.write(struct.pack(">fffdddfff", self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
+        buf.write(struct.pack(">diqifffdddfff", self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
         buf.write(struct.pack('>3f', *self.attUncertainty[:3]))
         buf.write(struct.pack(">ff", self.posUncertainty, self.velUncertainty))
 
@@ -82,11 +73,7 @@ class ins_t(object):
     @staticmethod
     def _decode_one(buf):
         self = ins_t()
-        self.time = struct.unpack(">d", buf.read(8))[0]
-        self.week = ins.uint16_t._decode_one(buf)
-        self.utcTime = ins.uint64_t._decode_one(buf)
-        self.insStatus = ins.uint16_t._decode_one(buf)
-        self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ = struct.unpack(">fffdddfff", buf.read(48))
+        self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ = struct.unpack(">diqifffdddfff", buf.read(72))
         self.attUncertainty = struct.unpack('>3f', buf.read(12))
         self.posUncertainty, self.velUncertainty = struct.unpack(">ff", buf.read(8))
         return self
@@ -94,8 +81,7 @@ class ins_t(object):
     @staticmethod
     def _get_hash_recursive(parents):
         if ins_t in parents: return 0
-        newparents = parents + [ins_t]
-        tmphash = (0xa3bdca9a930a85e9+ ins.uint16_t._get_hash_recursive(newparents)+ ins.uint64_t._get_hash_recursive(newparents)+ ins.uint16_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xc0784782b8273dce) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
