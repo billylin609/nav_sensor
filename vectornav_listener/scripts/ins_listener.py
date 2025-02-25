@@ -103,7 +103,7 @@ def callback(msg):
 
 def listener():
     rospy.init_node('ins_listener', anonymous=True)
-    rospy.Subscriber("/vectornav/ins", Ins, callback)
+    rospy.Subscriber("/vectornav/INS", Ins, callback)
     rospy.spin()
 
 lc = lcm.LCM()
