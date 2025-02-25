@@ -104,7 +104,7 @@ class ins_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">dhqhfffdddfff", self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
+        buf.write(struct.pack(">diqifffdddfff", self.time, self.week, self.utcTime, self.insStatus, self.yaw, self.pitch, self.roll, self.latitude, self.longitude, self.altitude, self.nedVelX, self.nedVelY, self.nedVelZ))
         buf.write(struct.pack('>3f', *self.attUncertainty[:3]))
         buf.write(struct.pack(">ff", self.posUncertainty, self.velUncertainty))
 
