@@ -31,5 +31,8 @@ RUN printf '#!/bin/bash\n' > /entrypoint.bash && \
     printf 'export LCM_DEFAULT_URL=udpm://239.255.76.67:7667?ttl=1\n' >> /entrypoint.bash && \
     printf 'source /catkin_ws/devel/setup.bash\n' >> /entrypoint.bash && \
     printf 'exec "$@"\n' >> /entrypoint.bash && \
-    chmod +x /entrypoint.bash && \
-    printf 'source /entrypoint.bash' >> .bashrc
+    printf 'roscore & \n' >> /entrypoint.bash && \
+    printf 'rosrun vectornav_listener ins_listener.py\n' >> /entrypoint.bash && \
+    chmod +x /entrypoint.bash
+
+ENTRYPOINT ["bash", "/entrypoint.bash"]
