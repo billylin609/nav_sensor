@@ -11,7 +11,7 @@ class ins_t(object):
 
     __slots__ = ["time", "week", "utcTime", "insStatus", "yaw", "pitch", "roll", "latitude", "longitude", "altitude", "nedVelX", "nedVelY", "nedVelZ", "attUncertainty", "posUncertainty", "velUncertainty"]
 
-    __typenames__ = ["double", "int16_t", "int64_t", "int16_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
+    __typenames__ = ["double", "int32_t", "int64_t", "int32_t", "float", "float", "float", "double", "double", "double", "float", "float", "float", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None, None, None, [3], None, None]
 
